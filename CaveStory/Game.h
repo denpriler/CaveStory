@@ -9,5 +9,8 @@ public:
 	~Game();
 
 	void loop();
+
+private:
+	bool _isGameLoop = false;
 };
 
