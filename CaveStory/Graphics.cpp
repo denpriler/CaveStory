@@ -15,3 +15,8 @@ Graphics::~Graphics()
 	SDL_DestroyRenderer(_renderer);
 	SDL_DestroyWindow(_window);
 }
+
+bool Graphics::IsReady()
+{
+	return _window && _renderer;
+}

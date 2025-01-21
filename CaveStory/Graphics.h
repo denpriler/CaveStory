@@ -12,5 +12,7 @@ private:
 public:
 	Graphics();
 	~Graphics();
+
+	bool IsReady();
 };
 

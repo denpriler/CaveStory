@@ -6,7 +6,8 @@
 Game::Game()
 {
 	// #[https://wiki.libsdl.org/SDL2/SDL_Init]
-	if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
+	_isGameLoop = SDL_Init(SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS) == 0;
+	if (!_isGameLoop) {
 		std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
 	}
 }
@@ -19,22 +20,25 @@ Game::~Game()
 
 void Game::loop()
 {
-	Graphics graphics;
-	SDL_Event event;
+	if (_isGameLoop) {
+		Graphics graphics;
+		if (!graphics.IsReady()) return;
 
-	_isGameLoop = true;
-	while (_isGameLoop) {
-		SDL_PollEvent(&event);
-		switch (event.type) {
-		case SDL_KEYDOWN:
-			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+		SDL_Event event;
+
+		while (_isGameLoop) {
+			SDL_PollEvent(&event);
+			switch (event.type) {
+			case SDL_KEYDOWN:
+				if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+					_isGameLoop = false;
+				break;
+			case SDL_QUIT:
 				_isGameLoop = false;
-			break;
-		case SDL_QUIT:
-			_isGameLoop = false;
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
