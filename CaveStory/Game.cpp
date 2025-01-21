@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Game.h"
 #include "Graphics.h"
+#include "Input.h"
 
 Game::Game()
 {
@@ -24,20 +25,36 @@ void Game::loop()
 		Graphics graphics;
 		if (!graphics.IsReady()) return;
 
+		Input input;
 		SDL_Event event;
 
+		// Subscribe on ESC key to exit
+		input.SubscribeOnKeyDownEvent(
+			SDL_SCANCODE_ESCAPE,
+			[&]() { _isGameLoop = false; }
+		);
+
 		while (_isGameLoop) {
-			SDL_PollEvent(&event);
-			switch (event.type) {
-			case SDL_KEYDOWN:
-				if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+			while (SDL_PollEvent(&event)) {
+				switch (event.type) {
+				case SDL_KEYDOWN:
+					input.OnKeyDownEvent(event);
+
+					break;
+
+				case SDL_KEYUP:
+					input.OnKeyUpEvent(event);
+
+					break;
+
+				case SDL_QUIT:
 					_isGameLoop = false;
-				break;
-			case SDL_QUIT:
-				_isGameLoop = false;
-				break;
-			default:
-				break;
+
+					break;
+
+				default:
+					break;
+				}
 			}
 		}
 	}
