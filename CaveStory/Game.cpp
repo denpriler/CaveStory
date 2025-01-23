@@ -26,16 +26,13 @@ void Game::loop()
 		if (!graphics.IsReady()) return;
 
 		Input input;
+		globalActions(input);
+
+		initPlayer(graphics, input);
+
 		SDL_Event event;
-
-		// Subscribe on ESC key to exit
-		input.SubscribeOnKeyDownEvent(
-			SDL_SCANCODE_ESCAPE,
-			[&]() { _isGameLoop = false; }
-		);
-
 		while (_isGameLoop) {
-			while (SDL_PollEvent(&event)) {
+			if (SDL_PollEvent(&event)) {
 				switch (event.type) {
 				case SDL_KEYDOWN:
 					input.OnKeyDownEvent(event);
@@ -56,6 +53,34 @@ void Game::loop()
 					break;
 				}
 			}
+
+			draw(graphics);
 		}
 	}
+}
+
+void Game::globalActions(Input& input)
+{
+	// Subscribe on ESC key to exit
+	input.SubscribeOnKeyDownEvent(
+		SDL_SCANCODE_ESCAPE,
+		[&]() { _isGameLoop = false; }
+	);
+}
+
+void Game::draw(Graphics& graphics)
+{
+	// Clear all render
+	graphics.clear();
+
+	// Here goes updates
+	_player.draw(graphics, 640 / 2, 480 / 2);
+
+	// Actually rendering what's updated
+	graphics.flip();
+}
+
+void Game::initPlayer(Graphics& graphics, Input& input)
+{
+	_player = Sprite(graphics, "data/sprites/MyChar.pbm", 0, 0, 16, 16);
 }
